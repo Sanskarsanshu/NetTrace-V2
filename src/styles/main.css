@@ -1670,18 +1670,10 @@ code {
 }
 
 .spot-ring {
-  fill: rgba(127, 194, 120, 0.14);
+  fill: rgba(127, 194, 120, 0.18);
   stroke: #5fae57;
-  stroke-width: 2.2px;
-  transform-box: fill-box;
-  transform-origin: 50%;
-  animation: 1.6s ease-out infinite spot-pulse;
-}
-
-@keyframes spot-pulse {
-  0% { opacity: 0.85; transform: scale(0.92); }
-  70% { opacity: 0.2; transform: scale(1.08); }
-  100% { opacity: 0; transform: scale(1.12); }
+  stroke-width: 1.6px;
+  stroke-dasharray: 4 3;
 }
 
 /* ==========================================================================

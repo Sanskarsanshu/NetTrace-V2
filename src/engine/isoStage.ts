@@ -555,15 +555,56 @@ function renderEntity(entity: SceneEntity): SVGElement {
   });
 
   if (entity.highlight) {
-    g.appendChild(
-      el('ellipse', {
-        cx: 0,
-        cy: entity.kind === 'osi-stack' ? 14 : 12,
-        rx: entity.kind === 'osi-stack' ? 86 : 66,
-        ry: entity.kind === 'osi-stack' ? 42 : 34,
-        class: 'spot-ring',
-      })
-    );
+    if (entity.kind === 'laptop') {
+      g.appendChild(
+        el('path', {
+          d: roundedPolyPath(
+            [
+              [0, -28],
+              [58, 0],
+              [0, 28],
+              [-58, 0],
+            ],
+            8
+          ),
+          class: 'spot-ring',
+          transform: 'translate(0, 10)',
+        })
+      );
+    } else if (entity.kind === 'osi-stack') {
+      g.appendChild(
+        el('path', {
+          d: roundedPolyPath(
+            [
+              [0, -36],
+              [80, 0],
+              [0, 36],
+              [-80, 0],
+            ],
+            10
+          ),
+          class: 'spot-ring',
+          transform: 'translate(0, 106)',
+        })
+      );
+    } else {
+      const depth = entity.kind === 'switch' ? 24 : 40;
+      g.appendChild(
+        el('path', {
+          d: roundedPolyPath(
+            [
+              [0, -30],
+              [64, 0],
+              [0, 30],
+              [-64, 0],
+            ],
+            9
+          ),
+          class: 'spot-ring',
+          transform: `translate(0, ${depth + 4})`,
+        })
+      );
+    }
   }
 
   const tone = TONE_COLORS[entity.tone || 'blue'];
@@ -643,7 +684,7 @@ function renderEntity(entity: SceneEntity): SVGElement {
       }
     }
 
-    // Crisp icon glyph positioned in upper half (matching reference y=-4)
+    // Crisp icon glyph positioned in upper half
     const iconName =
       entity.icon ||
       (entity.kind === 'router'
@@ -653,29 +694,58 @@ function renderEntity(entity: SceneEntity): SVGElement {
           : entity.kind === 'cloud'
             ? 'globe'
             : 'server');
-    const glyphWrap = el('g', { transform: 'translate(0, -5)', color: '#211e1b' });
+    const glyphWrap = el('g', { transform: 'translate(0, -6)', color: '#211e1b' });
     glyphWrap.innerHTML = drawBlockGlyph(iconName);
     g.appendChild(glyphWrap);
 
-    // Exact reference block label: 13px bold #211e1b, cleanly centered below icon
-    g.appendChild(
-      el(
-        'text',
-        {
-          x: 0,
-          y: entity.kind === 'switch' ? 14 : 21,
-          'text-anchor': 'middle',
-          'dominant-baseline': 'central',
-          fill: '#211e1b',
-          'font-size': 13,
-          'font-weight': 800,
-        },
-        entity.label
-      )
-    );
-
+    // Exact reference block labels: 13px bold #211e1b, with clean sublabel underneath
     if (entity.sublabel) {
-      g.appendChild(drawPill(entity.sublabel, 'neutral', 0, ry + depth + 20));
+      g.appendChild(
+        el(
+          'text',
+          {
+            x: 0,
+            y: entity.kind === 'switch' ? 12 : 15,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'central',
+            fill: '#211e1b',
+            'font-size': 13,
+            'font-weight': 800,
+          },
+          entity.label
+        )
+      );
+      g.appendChild(
+        el(
+          'text',
+          {
+            x: 0,
+            y: entity.kind === 'switch' ? 22 : 29,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'central',
+            fill: '#464038',
+            'font-size': 10,
+            'font-weight': 600,
+          },
+          entity.sublabel
+        )
+      );
+    } else {
+      g.appendChild(
+        el(
+          'text',
+          {
+            x: 0,
+            y: entity.kind === 'switch' ? 14 : 21,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'central',
+            fill: '#211e1b',
+            'font-size': 13,
+            'font-weight': 800,
+          },
+          entity.label
+        )
+      );
     }
   }
 
@@ -1235,7 +1305,7 @@ export class IsoStage {
       if (link.label) {
         const total = pathEl.getTotalLength();
         const midPt = pathEl.getPointAtLength(total * 0.5);
-        this.linksG.appendChild(drawPill(link.label, 'neutral', midPt.x, midPt.y - 18));
+        this.linksG.appendChild(drawPill(link.label, 'neutral', midPt.x, midPt.y - 2));
       }
     }
 
