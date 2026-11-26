@@ -909,22 +909,57 @@ export class IsoStage {
     filt.appendChild(el('feGaussianBlur', { stdDeviation: 3.5 }));
     defs.appendChild(filt);
 
-    // Subtle isometric diamond grid
+    // Subtle 28x14 isometric diamond grid matching designed-to-scale
     const pat = el('pattern', {
       id: 'iso-grid',
-      width: 64,
-      height: 32,
       patternUnits: 'userSpaceOnUse',
+      x: 0,
+      y: -7,
+      width: 28,
+      height: 14,
     });
     pat.appendChild(
       el('path', {
-        d: 'M32 0 L64 16 L32 32 L0 16 Z',
+        d: 'M0 7 L14 0 L28 7 L14 14 Z',
         fill: 'none',
         stroke: 'var(--grid-line)',
-        'stroke-width': 1,
+        'stroke-width': 0.8,
       })
     );
     defs.appendChild(pat);
+
+    // Radial vignette mask: grid is clear under diagram and fades softly towards edges
+    const grad = el('radialGradient', {
+      id: 'grid-fade',
+      gradientUnits: 'userSpaceOnUse',
+      cx: 460,
+      cy: 270,
+      r: 460,
+    });
+    grad.appendChild(el('stop', { offset: '0', 'stop-color': '#fff', 'stop-opacity': '1' }));
+    grad.appendChild(el('stop', { offset: '0.45', 'stop-color': '#fff', 'stop-opacity': '0.92' }));
+    grad.appendChild(el('stop', { offset: '0.78', 'stop-color': '#fff', 'stop-opacity': '0.35' }));
+    grad.appendChild(el('stop', { offset: '1', 'stop-color': '#fff', 'stop-opacity': '0' }));
+    defs.appendChild(grad);
+
+    const mask = el('mask', {
+      id: 'grid-mask',
+      maskUnits: 'userSpaceOnUse',
+      x: -3000,
+      y: -3000,
+      width: 6000,
+      height: 6000,
+    });
+    mask.appendChild(
+      el('rect', {
+        x: -3000,
+        y: -3000,
+        width: 6000,
+        height: 6000,
+        fill: 'url(#grid-fade)',
+      })
+    );
+    defs.appendChild(mask);
 
     // Crisp arrowhead markers with aerodynamic geometry
     const marker = el('marker', {
@@ -941,12 +976,23 @@ export class IsoStage {
     this.svg.appendChild(defs);
 
     this.viewportG = el('g', { class: 'stage-viewport' }) as SVGGElement;
+    // Masked isometric grid floor that pans and zooms with the diagram
+    const grid = el('rect', {
+      class: 'stage-grid',
+      x: -3000,
+      y: -3000,
+      width: 6000,
+      height: 6000,
+      fill: 'url(#iso-grid)',
+      mask: 'url(#grid-mask)',
+      'pointer-events': 'all',
+    });
     this.linksG = el('g') as SVGGElement;
     this.nodesG = el('g') as SVGGElement;
     this.packetsG = el('g') as SVGGElement;
     this.cardsG = el('g') as SVGGElement;
 
-    this.viewportG.append(this.linksG, this.nodesG, this.packetsG);
+    this.viewportG.append(grid, this.linksG, this.nodesG, this.packetsG);
     this.svg.append(this.viewportG, this.cardsG);
 
     this.container.innerHTML = '';

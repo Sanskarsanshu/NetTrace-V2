@@ -1453,8 +1453,6 @@ code {
 /* Stage */
 .stage {
   background-color: var(--stage-bg);
-  background-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 45%, var(--stage-bg) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Cpath d='M0 7L14 0L28 7L14 14Z' fill='none' stroke='%23a8916f' stroke-opacity='0.3' stroke-width='0.8'/%3E%3C/svg%3E");
   flex: 1;
   min-height: 0;
   margin-top: 10px;
@@ -1463,8 +1461,7 @@ code {
 }
 
 :root:not([data-theme='light']) .stage {
-  background-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 45%, var(--stage-bg) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Cpath d='M0 7L14 0L28 7L14 14Z' fill='none' stroke='%238c8070' stroke-opacity='0.18' stroke-width='0.8'/%3E%3C/svg%3E");
+  background-color: var(--stage-bg);
 }
 
 .stage__canvas {
