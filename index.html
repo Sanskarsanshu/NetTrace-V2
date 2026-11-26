@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>NetTrace — Computer Networks, an interactive course</title>
+    <meta
+      name="description"
+      content="An interactive Computer Networks course: each idea is an animated isometric diagram you step through — the OSI 7 layers, TCP/IP, DNS, routing, switching, HTTP, TLS and real-world packet flows."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f4ebe0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": "NetTrace — Computer Networks",
+        "description": "An interactive Computer Networks course: step through animated isometric diagrams for the OSI 7-layer model, TCP/IP, routing, DNS, HTTP, TLS, and network troubleshooting.",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "educationalLevel": "Beginner to advanced"
+      }
+    </script>
+
+    <script>
+      try {
+        var raw = localStorage.getItem('nettrace:theme') || localStorage.getItem('theme');
+        var t = (raw && raw.charAt(0) === '"') ? JSON.parse(raw) : raw;
+        if (t && t !== 'light') {
+          document.documentElement.dataset.theme = t;
+          document.documentElement.classList.add('dark');
+          var colors = {
+            dark: '#211e1a',
+            retro: '#1d2021'
+          };
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m && colors[t]) m.setAttribute('content', colors[t]);
+        }
+      } catch (e) {}
+      var w = innerWidth, h = innerHeight;
+      document.documentElement.dataset.layout =
+        w >= 1200 && h >= 560 ? 'desktop' : w >= 960 && h >= 600 ? 'tablet' : 'stack';
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>
+      <div style="max-width: 560px; margin: 15vh auto; padding: 0 24px; font: 15px/1.5 ui-monospace, Menlo, monospace; color: #1d1b18">
+        <h1 style="font-size: 24px">NetTrace — Computer Networks</h1>
+        <p>An interactive Computer Networks course: each idea is an animated diagram you step through. Please enable JavaScript and reload.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
