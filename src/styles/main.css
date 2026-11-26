@@ -1676,6 +1676,69 @@ code {
   stroke-dasharray: 4 3;
 }
 
+/* Smooth pop and glide transitions on step change */
+@keyframes nodePopIn {
+  0% {
+    opacity: 0;
+    transform: translate(var(--node-x), var(--node-y)) scale(0.65);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(var(--node-x), var(--node-y)) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--node-x), var(--node-y)) scale(1);
+  }
+}
+
+.iso-node--enter {
+  animation: nodePopIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes linkEnter {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 60;
+  }
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+.iso-link--enter {
+  animation: linkEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pillPopIn {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pill-x), var(--pill-y)) scale(0.65);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(var(--pill-x), var(--pill-y)) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--pill-x), var(--pill-y)) scale(1);
+  }
+}
+
+.iso-pill--enter {
+  animation: pillPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.btn-next {
+  transition: transform 0.15s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.15s ease;
+}
+
+.btn-next:active {
+  transform: translate(1px, 2px) scale(0.97) !important;
+  box-shadow: 0 0 0 var(--drop) !important;
+}
+
 /* ==========================================================================
    Bottom Step Timeline
    ========================================================================== */

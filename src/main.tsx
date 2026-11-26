@@ -523,7 +523,7 @@ class NetTraceApp {
     if (next < 0 || next >= this.currentLesson.steps.length) return;
     this.stopSpeech();
     this.stepIdx = next;
-    this.renderStep(false);
+    this.renderStep(true);
     this.updateHash();
   }
 

@@ -238,27 +238,27 @@ export function iso(x: number, y: number): [number, number] {
 function drawBlockGlyph(icon: string | undefined): string {
   switch (icon) {
     case 'server':
-      return `<rect x="-12" y="-13" width="24" height="8" rx="2" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.7"/>
-              <rect x="-12" y="-2.5" width="24" height="8" rx="2" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.7"/>
-              <circle cx="-7.5" cy="-9" r="1.4" fill="currentColor"/>
-              <circle cx="-7.5" cy="1.5" r="1.4" fill="currentColor"/>
-              <path d="M-2.5 -9h8.5M-2.5 1.5h8.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`;
+      return `<rect x="-12" y="-7" width="24" height="6.5" rx="1.8" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.6"/>
+              <rect x="-12" y="1.5" width="24" height="6.5" rx="1.8" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="-7.5" cy="-3.7" r="1.3" fill="currentColor"/>
+              <circle cx="-7.5" cy="4.8" r="1.3" fill="currentColor"/>
+              <path d="M-2.5 -3.7h8.5M-2.5 4.8h8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`;
     case 'router':
-      return `<circle cx="0" cy="-4" r="10.5" fill="#ffffff" fill-opacity="0.5" stroke="currentColor" stroke-width="1.7"/>
-              <path d="M-6.5 -4h13M0 -10.5v13M-3.5 -8l3.5-2.5 3.5 2.5M-3.5 0l3.5 2.5 3.5-2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      return `<circle cx="0" cy="0" r="9.5" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M-6 0h12M0 -6v12M-3.2 -4l3.2-2.5 3.2 2.5M-3.2 4l3.2 2.5 3.2-2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`;
     case 'switch':
-      return `<rect x="-14" y="-11" width="28" height="14" rx="2.5" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.7"/>
-              <path d="M-8 -6.5h11m0 0-2.5-2.2m2.5 2.2-2.5 2.2M8 -1.5H-3m0 0 2.5-2.2m-2.5 2.2 2.5 2.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      return `<rect x="-13" y="-6" width="26" height="12" rx="2.2" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M-7.5 -2.5h10.5m0 0-2.2-2m2.2 2-2.2 2M7.5 2.5H-3m0 0 2.2-2m-2.2 2 2.2 2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`;
     case 'globe':
-      return `<circle cx="0" cy="-4" r="10" fill="#ffffff" fill-opacity="0.5" stroke="currentColor" stroke-width="1.7"/>
-              <ellipse cx="0" cy="-4" rx="4.5" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
-              <path d="M-10 -4h20" stroke="currentColor" stroke-width="1.4"/>`;
+      return `<circle cx="0" cy="0" r="9.5" fill="#ffffff" fill-opacity="0.55" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="0" cy="0" rx="4.2" ry="9.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M-9.5 0h19" stroke="currentColor" stroke-width="1.3"/>`;
     case 'lock':
-      return `<rect x="-8" y="-5" width="16" height="11" rx="2.5" fill="#ffffff" fill-opacity="0.6" stroke="currentColor" stroke-width="1.7"/>
-              <path d="M-4.5 -5v-3.5a4.5 4.5 0 0 1 9 0V-5" fill="none" stroke="currentColor" stroke-width="1.7"/>`;
+      return `<rect x="-7.5" y="-1" width="15" height="10" rx="2" fill="#ffffff" fill-opacity="0.6" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M-4.2 -1v-3.2a4.2 4.2 0 0 1 8.4 0V-1" fill="none" stroke="currentColor" stroke-width="1.6"/>`;
     default:
-      return `<circle cx="0" cy="-4" r="4.5" fill="#ffffff" fill-opacity="0.6" stroke="currentColor" stroke-width="1.7"/>
-              <path d="M-11 -4h6.5M4.5 -4h6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>`;
+      return `<circle cx="0" cy="0" r="4.5" fill="#ffffff" fill-opacity="0.6" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M-10 0h5.5M4.5 0h5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`;
   }
 }
 
@@ -266,12 +266,16 @@ function drawPill(
   text: string,
   tone: 'neutral' | 'good' | 'warn' | 'bad' | 'violet' | 'blue' = 'neutral',
   x = 0,
-  y = 0
+  y = 0,
+  className = ''
 ): SVGElement {
-  const g = el('g', { transform: `translate(${x.toFixed(1)}, ${y.toFixed(1)})` });
+  const g = el('g', {
+    class: `iso-pill ${className}`.trim(),
+    transform: `translate(${x.toFixed(1)}, ${y.toFixed(1)})`,
+  });
   const textW = measureTextWidth(text, 10.5, 700);
-  const w = Math.max(54, Math.ceil(textW + 22));
-  const h = 21;
+  const w = Math.max(54, Math.ceil(textW + 24));
+  const h = 22;
   const bgMap = {
     neutral: '#fbf7f1',
     good: '#dff0de',
@@ -438,8 +442,8 @@ function renderLaptop(entity: SceneEntity): SVGElement {
     })
   );
 
-  // Label pill neatly underneath pedestal
-  g.appendChild(drawPill(entity.label, 'neutral', 0, 56));
+  // Label pill comfortably underneath pedestal
+  g.appendChild(drawPill(entity.label, 'neutral', 0, 68));
   return g;
 }
 
@@ -588,20 +592,20 @@ function renderEntity(entity: SceneEntity): SVGElement {
         })
       );
     } else {
-      const depth = entity.kind === 'switch' ? 24 : 40;
+      const depth = entity.kind === 'switch' ? 24 : 58;
       g.appendChild(
         el('path', {
           d: roundedPolyPath(
             [
-              [0, -30],
-              [64, 0],
-              [0, 30],
-              [-64, 0],
+              [0, -32],
+              [68, 0],
+              [0, 32],
+              [-68, 0],
             ],
-            9
+            10
           ),
           class: 'spot-ring',
-          transform: `translate(0, ${depth + 4})`,
+          transform: `translate(0, ${depth + 6})`,
         })
       );
     }
@@ -662,10 +666,10 @@ function renderEntity(entity: SceneEntity): SVGElement {
       )
     );
   } else {
-    // Exact reference isometric block proportions: rx=56, ry=28 (2:1), depth=40 (switch: 24)
+    // Exact reference isometric block proportions: rx=56, ry=28, depth=58 (switch: 24)
     const rx = 56;
     const ry = 28;
-    const depth = entity.kind === 'switch' ? 24 : 40;
+    const depth = entity.kind === 'switch' ? 24 : 58;
     g.appendChild(buildRoundedIsoPrism(rx, ry, depth, 11, tone, 1.9));
 
     // Switch port LEDs along front-left bevel
@@ -684,7 +688,6 @@ function renderEntity(entity: SceneEntity): SVGElement {
       }
     }
 
-    // Crisp icon glyph positioned in upper half
     const iconName =
       entity.icon ||
       (entity.kind === 'router'
@@ -694,18 +697,17 @@ function renderEntity(entity: SceneEntity): SVGElement {
           : entity.kind === 'cloud'
             ? 'globe'
             : 'server');
-    const glyphWrap = el('g', { transform: 'translate(0, -6)', color: '#211e1b' });
-    glyphWrap.innerHTML = drawBlockGlyph(iconName);
-    g.appendChild(glyphWrap);
 
-    // Exact reference block labels: 13px bold #211e1b, with clean sublabel underneath
-    if (entity.sublabel) {
+    if (entity.kind === 'switch') {
+      const glyphWrap = el('g', { transform: 'translate(0, 0)', color: '#211e1b' });
+      glyphWrap.innerHTML = drawBlockGlyph(iconName);
+      g.appendChild(glyphWrap);
       g.appendChild(
         el(
           'text',
           {
             x: 0,
-            y: entity.kind === 'switch' ? 12 : 15,
+            y: 13,
             'text-anchor': 'middle',
             'dominant-baseline': 'central',
             fill: '#211e1b',
@@ -713,46 +715,70 @@ function renderEntity(entity: SceneEntity): SVGElement {
             'font-weight': 800,
           },
           entity.label
-        )
-      );
-      g.appendChild(
-        el(
-          'text',
-          {
-            x: 0,
-            y: entity.kind === 'switch' ? 22 : 29,
-            'text-anchor': 'middle',
-            'dominant-baseline': 'central',
-            fill: '#464038',
-            'font-size': 10,
-            'font-weight': 600,
-          },
-          entity.sublabel
         )
       );
     } else {
-      g.appendChild(
-        el(
-          'text',
-          {
-            x: 0,
-            y: entity.kind === 'switch' ? 14 : 21,
-            'text-anchor': 'middle',
-            'dominant-baseline': 'central',
-            fill: '#211e1b',
-            'font-size': 13,
-            'font-weight': 800,
-          },
-          entity.label
-        )
-      );
+      // Front face extends from y = 28 to y = 86 (depth 58)
+      // Icon centered at y = 44, label at y = 61, sublabel at y = 74
+      const glyphWrap = el('g', { transform: 'translate(0, 44)', color: '#211e1b' });
+      glyphWrap.innerHTML = drawBlockGlyph(iconName);
+      g.appendChild(glyphWrap);
+
+      if (entity.sublabel) {
+        g.appendChild(
+          el(
+            'text',
+            {
+              x: 0,
+              y: 61,
+              'text-anchor': 'middle',
+              'dominant-baseline': 'central',
+              fill: '#211e1b',
+              'font-size': 13,
+              'font-weight': 800,
+            },
+            entity.label
+          )
+        );
+        g.appendChild(
+          el(
+            'text',
+            {
+              x: 0,
+              y: 74,
+              'text-anchor': 'middle',
+              'dominant-baseline': 'central',
+              fill: '#4a4339',
+              'font-size': 10,
+              'font-weight': 600,
+            },
+            entity.sublabel
+          )
+        );
+      } else {
+        g.appendChild(
+          el(
+            'text',
+            {
+              x: 0,
+              y: 65,
+              'text-anchor': 'middle',
+              'dominant-baseline': 'central',
+              fill: '#211e1b',
+              'font-size': 13,
+              'font-weight': 800,
+            },
+            entity.label
+          )
+        );
+      }
     }
   }
 
   // Floating tags above / below
   if (entity.tags?.length) {
-    let topOffset = entity.kind === 'osi-stack' ? -118 : entity.kind === 'laptop' ? -66 : -48;
-    let botOffset = entity.kind === 'laptop' ? 84 : entity.kind === 'osi-stack' ? 176 : 64;
+    let topOffset = entity.kind === 'osi-stack' ? -118 : entity.kind === 'laptop' ? -76 : -60;
+    let botOffset = entity.kind === 'laptop' ? 96 : entity.kind === 'osi-stack' ? 176 : 100;
     for (const tag of entity.tags) {
       const pos = tag.pos || 'top';
       const ty = pos === 'top' ? topOffset : botOffset;
@@ -1241,18 +1267,61 @@ export class IsoStage {
     });
   }
 
-  public render(scene: SceneSpec, stagger = false) {
-    this.pathMap.clear();
-    this.linksG.innerHTML = '';
-    this.nodesG.innerHTML = '';
-    this.packetsG.innerHTML = '';
-    this.cardsG.innerHTML = '';
+  public render(scene: SceneSpec, stagger = true) {
     this.flows = scene.flows;
 
     const entityById = new Map<string, SceneEntity>();
     scene.entities.forEach((ent) => entityById.set(ent.id, ent));
 
-    // 1. Links (with rounded corners and clean endpoint trim)
+    // 1. Reconcile entities: existing nodes smoothly stay/transition, new nodes pop in!
+    const incomingIds = new Set(scene.entities.map((e) => e.id));
+    const currentNodes = Array.from(this.nodesG.children) as SVGElement[];
+
+    // Remove nodes that are no longer in the scene
+    for (const node of currentNodes) {
+      const eid = node.getAttribute('data-entity');
+      if (eid && !incomingIds.has(eid)) {
+        node.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+        node.style.opacity = '0';
+        node.style.transform += ' scale(0.7)';
+        setTimeout(() => node.remove(), 280);
+      }
+    }
+
+    // Sort incoming entities by isometric depth (a.x + a.y)
+    const sorted = [...scene.entities].sort((a, b) => a.x + a.y - (b.x + b.y));
+
+    sorted.forEach((ent, idx) => {
+      const [sx, sy] = iso(ent.x, ent.y);
+      const existing = this.nodesG.querySelector(`[data-entity="${ent.id}"]`) as SVGElement | null;
+
+      if (existing) {
+        // Keep existing node — smooth glide if moved, stable if unchanged
+        existing.style.setProperty('--node-x', `${sx.toFixed(1)}px`);
+        existing.style.setProperty('--node-y', `${sy.toFixed(1)}px`);
+        existing.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
+        existing.style.opacity = ent.dim ? '0.35' : '1';
+        existing.dataset.dim = ent.dim ? '1' : '0';
+      } else {
+        // New node entering — build and animate with pop-in!
+        const node = renderEntity(ent);
+        node.dataset.dim = ent.dim ? '1' : '0';
+        node.style.setProperty('--node-x', `${sx.toFixed(1)}px`);
+        node.style.setProperty('--node-y', `${sy.toFixed(1)}px`);
+        node.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
+
+        if (stagger) {
+          node.classList.add('iso-node--enter');
+          node.style.animationDelay = `${idx * 75 + 25}ms`;
+        }
+        this.nodesG.appendChild(node);
+      }
+    });
+
+    // 2. Re-render links with smooth entry animation
+    this.pathMap.clear();
+    this.linksG.innerHTML = '';
+
     for (const link of scene.links) {
       const a = entityById.get(link.from);
       const b = entityById.get(link.to);
@@ -1267,7 +1336,7 @@ export class IsoStage {
         const first = pts[0];
         const next = pts[1];
         const d1 = Math.hypot(next[0] - first[0], next[1] - first[1]) || 1;
-        const trimStart = a.kind === 'osi-stack' ? 74 : a.kind === 'laptop' ? 56 : 52;
+        const trimStart = a.kind === 'osi-stack' ? 74 : a.kind === 'laptop' ? 64 : 58;
         if (d1 > trimStart + 12) {
           pts[0] = [
             first[0] + ((next[0] - first[0]) * trimStart) / d1,
@@ -1277,7 +1346,7 @@ export class IsoStage {
         const last = pts[pts.length - 1];
         const prev = pts[pts.length - 2];
         const d2 = Math.hypot(last[0] - prev[0], last[1] - prev[1]) || 1;
-        const trimEnd = b.kind === 'osi-stack' ? 74 : b.kind === 'laptop' ? 56 : 52;
+        const trimEnd = b.kind === 'osi-stack' ? 74 : b.kind === 'laptop' ? 64 : 58;
         if (d2 > trimEnd + 12) {
           pts[pts.length - 1] = [
             last[0] - ((last[0] - prev[0]) * trimEnd) / d2,
@@ -1293,6 +1362,7 @@ export class IsoStage {
       else if (link.style === 'beat') styleClass += ' iso-link--beat';
       else if (link.style === 'off') styleClass += ' iso-link--off';
       else if (isActive) styleClass += ' iso-link--active';
+      if (stagger) styleClass += ' iso-link--enter';
 
       const pathAttrs: Record<string, string | number> = { d, class: styleClass };
       if (link.arrow !== 'none') pathAttrs['marker-end'] = 'url(#iso-arrow)';
@@ -1305,25 +1375,15 @@ export class IsoStage {
       if (link.label) {
         const total = pathEl.getTotalLength();
         const midPt = pathEl.getPointAtLength(total * 0.5);
-        this.linksG.appendChild(drawPill(link.label, 'neutral', midPt.x, midPt.y - 2));
+        const pill = drawPill(link.label, 'neutral', midPt.x, midPt.y, stagger ? 'iso-pill--enter' : '');
+        pill.style.setProperty('--pill-x', `${midPt.x.toFixed(1)}px`);
+        pill.style.setProperty('--pill-y', `${midPt.y.toFixed(1)}px`);
+        this.linksG.appendChild(pill);
       }
     }
 
-    // 2. Entities sorted by isometric depth
-    const sorted = [...scene.entities].sort((a, b) => a.x + a.y - (b.x + b.y));
-    sorted.forEach((ent, idx) => {
-      const node = renderEntity(ent);
-      node.dataset.dim = ent.dim ? '1' : '0';
-      if (stagger) {
-        node.style.opacity = '0';
-        setTimeout(() => {
-          node.style.opacity = ent.dim ? '0.35' : '1';
-        }, idx * 75 + 25);
-      }
-      this.nodesG.appendChild(node);
-    });
-
     // 3. Floating Mini-Cards
+    this.cardsG.innerHTML = '';
     if (scene.cards) {
       for (const card of scene.cards) {
         this.cardsG.appendChild(renderMiniCard(card));

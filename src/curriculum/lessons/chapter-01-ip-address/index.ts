@@ -51,8 +51,8 @@ const ipAddressStructureLesson: Lesson = {
           {
             id: 'client',
             kind: 'laptop',
-            x: -1.1,
-            y: 0.8,
+            x: -2.0,
+            y: 2.2,
             label: '👤 you',
             tone: 'slate',
             tags: [{ text: '🌐 https://shop.example', tone: 'neutral', pos: 'top' }],
@@ -93,8 +93,8 @@ const ipAddressStructureLesson: Lesson = {
           {
             id: 'client',
             kind: 'laptop',
-            x: -1.1,
-            y: 0.8,
+            x: -2.0,
+            y: 2.2,
             label: '👤 you',
             tone: 'slate',
             tags: [{ text: '🌐 https://shop.example', tone: 'neutral', pos: 'top' }],
@@ -102,8 +102,8 @@ const ipAddressStructureLesson: Lesson = {
           {
             id: 'dns',
             kind: 'server',
-            x: -1.1,
-            y: -6.6,
+            x: -2.0,
+            y: -6.8,
             label: 'DNS',
             sublabel: 'resolver',
             tone: 'gold',
