@@ -1,3 +1,5 @@
+@import "react-isokit/styles.css";
+
 /* ==========================================================================
    NetTrace Design System — Warm Paper + Ink + Pop Shadows (Light & Dark)
    ========================================================================== */
@@ -1480,9 +1482,68 @@ code {
   display: none !important;
 }
 
-.stage__canvas.is-dragging {
-  cursor: grabbing;
+.stage__canvas.is-react-stage {
+  cursor: default;
+  user-select: auto;
 }
+
+#react-stage-mount {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+#react-stage-mount .ik-plate {
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.stage__domains {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stage-domain-btn {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1.2px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stage-domain-btn small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.stage-domain-btn:hover {
+  background: var(--surface-hi);
+  border-color: var(--ink);
+}
+
+.stage-domain-btn.is-active {
+  background: #f9dfa2;
+  color: #1e1b18;
+  border-color: #1e1b18;
+  font-weight: 700;
+  box-shadow: 0 1.5px 0 #1e1b18;
+}
+
+.stage-domain-btn.is-active small {
+  color: #5c564d;
+}
+
 
 .stage-svg {
   width: 100%;
@@ -3308,4 +3369,241 @@ code {
   .search { width: 36px; justify-content: center; padding: 0; }
   .search__hint,
   .search kbd { display: none; }
+}
+
+/* ==========================================================================
+   Chapter 1 — Interactive 3D Isometric DNS & IPv4 Diagram Styles
+   ========================================================================== */
+
+@keyframes security-key-off {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes security-key-on {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Security Key specific styles */
+.fig-security-key .sk-avatar,
+.fig-security-key .sk-lock {
+  fill: none;
+  stroke: var(--ik-screen-ink, #22241f);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.fig-security-key .sk-disc {
+  --ik-top: #f7d97e;
+  --ik-front: #e7c258;
+  --ik-side: #d4ad42;
+  --ik-line: #8c6d1f;
+  --ik-detail: #b59233;
+}
+
+.fig-security-key .sk-until {
+  animation: security-key-off 1ms linear var(--sk-arrive, 700ms) forwards;
+}
+
+.fig-security-key .sk-from {
+  opacity: 0;
+  animation: security-key-on 240ms var(--ik-ease, ease) var(--sk-arrive, 700ms) forwards;
+}
+
+/* Warm Gold DNS Resolver Unit on FirewallRack */
+.fig-dns-scene .dns-gold-unit {
+  --ik-top: #f9e3a8;
+  --ik-front: #f3d289;
+  --ik-side: #e4bc68;
+  --ik-line: #23201c;
+  --ik-detail: #9e7b2f;
+}
+
+/* 4 IPv4 Octet Isometric Cuboid Palettes */
+.fig-dns-scene .octet-cuboid-0 {
+  --ik-top: #bce3ff;
+  --ik-front: #68b5f8;
+  --ik-side: #2e84d8;
+  --ik-line: #163d69;
+  --ik-detail: #1e5ea3;
+}
+
+.fig-dns-scene .octet-cuboid-1 {
+  --ik-top: #b4f0cd;
+  --ik-front: #5ec992;
+  --ik-side: #2b9a66;
+  --ik-line: #134e32;
+  --ik-detail: #1f734b;
+}
+
+.fig-dns-scene .octet-cuboid-2 {
+  --ik-top: #efe6dc;
+  --ik-front: #d4c4b4;
+  --ik-side: #b39f8c;
+  --ik-line: #4a3e34;
+  --ik-detail: #7d6b5b;
+}
+
+.fig-dns-scene .octet-cuboid-3 {
+  --ik-top: #9ed4f0;
+  --ik-front: #498ec2;
+  --ik-side: #23598c;
+  --ik-line: #112d4a;
+  --ik-detail: #1b4670;
+}
+
+/* Stage Drop & Reveal Animations */
+@keyframes descend-from-sky {
+  0% {
+    opacity: 0;
+    transform: translateY(-195px);
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(7px);
+  }
+  84% {
+    transform: translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-shadow-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  55% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+@keyframes cuboid-drop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-120px);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(5px);
+  }
+  88% {
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pill-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.75) translateY(8px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.04) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes draw-stroke-line {
+  from {
+    stroke-dashoffset: 380;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-server-descend {
+  animation: descend-from-sky 880ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-cuboid-drop {
+  animation: cuboid-drop-in 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-pill-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pill-pop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-draw-arrow {
+  stroke-dasharray: 380;
+  stroke-dashoffset: 380;
+  animation: draw-stroke-line 580ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes card-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(35px) scale(0.92);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-3px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-card-slide {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: card-slide-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* DNS Resolver Scene Custom Isometric Grid & Theme */
+.fig-dns-scene.ik-plate {
+  --ik-panel: #f7f2e7;
+  --ik-top: #fbf8f1;
+  --ik-front: #f1ece1;
+  --ik-side: #e5decb;
+  --ik-well: #ded6c3;
+  --ik-line: #57524a;
+  --ik-detail: #a8a093;
+  --ik-live: #1e1b18;
+  --ik-ink: #6e675b;
+  --ik-ink-hi: #1e1b18;
+  --ik-screen: #e6e8e1;
+  --ik-screen-ink: #22241f;
+  --ik-border: #dcd3c2;
+  background-color: #f7f2e7;
+  background-image:
+    linear-gradient(30deg, transparent 49.2%, #d8ccb845 49.8%, #d8ccb845 50.2%, transparent 50.8%),
+    linear-gradient(150deg, transparent 49.2%, #d8ccb845 49.8%, #d8ccb845 50.2%, transparent 50.8%);
+  background-size: 46px 26.5px;
+  box-shadow: 0 16px 40px -12px rgba(45, 36, 24, 0.12);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.font-mono-code {
+  font-family: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
 }

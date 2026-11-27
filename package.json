@@ -21,6 +21,7 @@
     "lucide-react": "^1.80.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-isokit": "^0.6.0",
     "tailwind-merge": "^3.7.1"
   }
 }

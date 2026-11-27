@@ -1,6 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { AnimatedThemeToggler, THEMES } from '@/components/ui/animated-theme-toggler';
+import DnsResolverDiagram, {
+  DNS_TARGETS,
+  type StoryStage,
+} from '@/components/ui/dns-resolver-diagram';
+import { configureSound, soundPreference } from 'react-isokit';
 import './styles/main.css';
 import { UI_ICONS } from './engine/icons';
 import { IsoStage } from './engine/isoStage';
@@ -33,6 +38,10 @@ class NetTraceApp {
   private progressOpen = false;
   private completed = new Set<string>();
   private stage: IsoStage | null = null;
+  private reactStageRoot: ReturnType<typeof createRoot> | null = null;
+  private targetDomainIdx = 0;
+  private revealedOctetsCount = 0;
+  private replayKey = 0;
   private lastMetrics: Record<string, string | number> = {};
   private speaking = false;
   private wasPausedBeforeTabSwitch = false;
@@ -204,6 +213,14 @@ class NetTraceApp {
     `;
 
     this.stage = new IsoStage(document.getElementById('stage-canvas')!);
+    try {
+      configureSound({ defaultOn: true, volume: 0.55 });
+    } catch {}
+    const reactMount = document.createElement('div');
+    reactMount.id = 'react-stage-mount';
+    reactMount.className = 'w-full h-full relative';
+    reactMount.style.display = 'none';
+    document.getElementById('stage-canvas')!.appendChild(reactMount);
     this.renderSidebar();
     this.renderProgress();
     this.bindShellEvents();
@@ -292,11 +309,8 @@ class NetTraceApp {
     document.getElementById('drawer-backdrop')?.addEventListener('click', () => this.closeDrawer());
 
     // Stage tools
-    document.getElementById('btn-zoom-in')?.addEventListener('click', () => this.stage?.zoomIn());
-    document.getElementById('btn-zoom-out')?.addEventListener('click', () => this.stage?.zoomOut());
-    document.getElementById('btn-fit')?.addEventListener('click', () => this.stage?.resetView());
-    document.getElementById('btn-replay')?.addEventListener('click', () => this.stage?.replay());
-    document.getElementById('btn-pause')?.addEventListener('click', () => this.togglePause());
+    this.renderStageTools();
+
 
     // Search modal
     document.getElementById('search-btn')?.addEventListener('click', () => this.openSearch());
@@ -356,7 +370,12 @@ class NetTraceApp {
         this.togglePause();
       } else if (e.key.toLowerCase() === 'r') {
         e.preventDefault();
-        this.stage?.replay();
+        if (this.currentLessonId === 'ip-address-structure') {
+          this.replayKey++;
+          this.renderStep(true);
+        } else {
+          this.stage?.replay();
+        }
       } else if (e.key === '+' || e.key === '=') {
         e.preventDefault();
         this.stage?.zoomIn();
@@ -541,13 +560,72 @@ class NetTraceApp {
     }
 
     // 1. Render Stage
-    this.stage?.render(step.scene, stagger);
+    const isCh1 = this.currentLessonId === 'ip-address-structure';
+    const canvasEl = document.getElementById('stage-canvas')!;
+    const svgEl = canvasEl.querySelector<SVGSVGElement>('svg.stage-svg');
+    let reactMount = document.getElementById('react-stage-mount');
+    if (!reactMount) {
+      reactMount = document.createElement('div');
+      reactMount.id = 'react-stage-mount';
+      reactMount.className = 'w-full h-full relative';
+      canvasEl.appendChild(reactMount);
+    }
+
+    const legendEl = document.getElementById('stage-legend');
+    if (legendEl) legendEl.style.display = isCh1 ? 'none' : 'flex';
+
+    if (isCh1) {
+      canvasEl.classList.add('is-react-stage');
+      if (svgEl) svgEl.style.display = 'none';
+      reactMount.style.display = 'block';
+
+      if (!this.reactStageRoot) {
+        this.reactStageRoot = createRoot(reactMount);
+      }
+
+      const stageNum = Math.max(0, Math.min(3, this.stepIdx)) as StoryStage;
+      this.reactStageRoot.render(
+        <DnsResolverDiagram
+          key={`dns-stage-${stageNum}-${this.targetDomainIdx}-${this.replayKey}`}
+          stage={stageNum}
+          targetIndex={this.targetDomainIdx}
+          onOctetRevealChange={(count) => {
+            this.revealedOctetsCount = count;
+            const octChipVal = document.querySelector<HTMLElement>('[data-metric="octets"] [data-val]');
+            if (octChipVal && this.stepIdx === 2) {
+              octChipVal.textContent = `${count} / 4`;
+            }
+          }}
+        />
+      );
+    } else {
+      canvasEl.classList.remove('is-react-stage');
+      if (svgEl) svgEl.style.display = 'block';
+      reactMount.style.display = 'none';
+      this.stage?.render(step.scene, stagger);
+    }
+
+    this.renderStageTools();
 
     // 2. Render HUD chips with smooth numeric count-up
+    const activeTarget = DNS_TARGETS[this.targetDomainIdx] || DNS_TARGETS[0];
     const hud = document.getElementById('stage-hud')!;
     hud.innerHTML = lesson.metrics
       .map((m) => {
-        const mv: MetricValue = step.metrics[m.id] || { value: '—', level: 'neutral' };
+        let mv: MetricValue = step.metrics[m.id] || { value: '—', level: 'neutral' };
+        if (isCh1) {
+          if (m.id === 'ip') {
+            mv = this.stepIdx === 0
+              ? { value: '—', level: 'neutral' }
+              : { value: activeTarget.ip, level: 'good' };
+          } else if (m.id === 'octets') {
+            mv = this.stepIdx === 0
+              ? { value: '0 / 4', level: 'neutral' }
+              : this.stepIdx === 1
+                ? { value: '0 / 4', level: 'neutral' }
+                : { value: `${this.revealedOctetsCount || 4} / 4`, level: 'good' };
+          }
+        }
         const changed = this.lastMetrics[m.id] !== undefined && this.lastMetrics[m.id] !== mv.value;
         return `
           <div class="chip ${changed ? 'is-changed' : ''}" data-level="${mv.level || 'neutral'}" data-metric="${m.id}">
@@ -606,6 +684,21 @@ class NetTraceApp {
           ? UI_ICONS.spark
           : UI_ICONS.bulb;
 
+    const resolvedBody = step.body.map((p) => {
+      if (!isCh1) return p;
+      return p
+        .replace(/https:\/\/Example\.com/g, `https://${activeTarget.domain}`)
+        .replace(/where is example\.com\?/gi, `where is ${activeTarget.domain.toLowerCase()}?`)
+        .replace(/192\.128\.168\.43/g, activeTarget.ip);
+    });
+
+    const resolvedChanges = (step.changes || []).map((c) => {
+      if (!isCh1) return c;
+      return c
+        .replace(/where is example\.com\?/gi, `where is ${activeTarget.domain.toLowerCase()}?`)
+        .replace(/192\.128\.168\.43/g, activeTarget.ip);
+    });
+
     const guide = document.getElementById('guide-card')!;
     guide.innerHTML = `
       <div class="guide__meta">
@@ -621,7 +714,7 @@ class NetTraceApp {
       <div class="guide__content is-in">
         <h2 class="guide__title">${step.title}</h2>
         <div class="guide__body">
-          ${step.body.map((p) => `<p>${p}</p>`).join('')}
+          ${resolvedBody.map((p) => `<p>${p}</p>`).join('')}
         </div>
 
         ${
@@ -637,11 +730,11 @@ class NetTraceApp {
         }
 
         ${
-          step.changes?.length
+          resolvedChanges.length
             ? `<div class="changes">
                 <div class="eyebrow">WHAT CHANGED</div>
                 <ul>
-                  ${step.changes
+                  ${resolvedChanges
                     .map((c) => {
                       const sym = c[0];
                       const cls = sym === '+' ? 'add' : sym === '-' ? 'del' : 'mod';
@@ -694,6 +787,76 @@ class NetTraceApp {
 
     // 5. Render Goals Card
     this.renderGoalsCard(lesson);
+  }
+
+  private renderStageTools() {
+    const tools = document.querySelector<HTMLElement>('.stage__tools');
+    if (!tools) return;
+    const isCh1 = this.currentLessonId === 'ip-address-structure';
+
+    if (isCh1) {
+      let sfxOn = false;
+      try {
+        sfxOn = soundPreference.get();
+      } catch {}
+      tools.innerHTML = `
+        <div class="stage__domains" id="stage-domains">
+          ${DNS_TARGETS.map(
+            (t, i) => `
+            <button
+              type="button"
+              class="stage-domain-btn ${this.targetDomainIdx === i ? 'is-active' : ''}"
+              data-domain="${i}"
+              title="Target: ${t.domain} (${t.ip})"
+            >
+              <span>${t.domain}</span>
+              <small>(${t.ip})</small>
+            </button>`
+          ).join('')}
+        </div>
+        <button class="tool" id="btn-replay" title="Replay step animation (R)">
+          ${UI_ICONS.replay} <span>Replay</span>
+        </button>
+        <button class="tool ${sfxOn ? 'is-on' : ''}" id="btn-sound-toggle" title="Toggle audio effects">
+          ${UI_ICONS.speaker} <span>SFX</span>
+        </button>
+      `;
+
+      tools.querySelectorAll<HTMLButtonElement>('[data-domain]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.targetDomainIdx = Number(btn.dataset.domain);
+          this.renderStep(false);
+        });
+      });
+
+      tools.querySelector('#btn-replay')?.addEventListener('click', () => {
+        this.replayKey++;
+        this.renderStep(true);
+      });
+
+      tools.querySelector('#btn-sound-toggle')?.addEventListener('click', () => {
+        try {
+          const next = !soundPreference.get();
+          configureSound({ defaultOn: next });
+          tools.querySelector('#btn-sound-toggle')?.classList.toggle('is-on', next);
+          this.showToast(next ? 'SFX Audio enabled' : 'SFX Audio muted');
+        } catch {}
+      });
+    } else {
+      tools.innerHTML = `
+        <button class="tool tool--icon" id="btn-zoom-in" title="Zoom in (+)" aria-label="Zoom in">${UI_ICONS.zoomIn}</button>
+        <button class="tool tool--icon" id="btn-zoom-out" title="Zoom out (-)" aria-label="Zoom out">${UI_ICONS.zoomOut}</button>
+        <button class="tool" id="btn-fit" title="Reset zoom & pan (0)" hidden>Fit</button>
+        <button class="tool" id="btn-replay" title="Replay step animation (R)">${UI_ICONS.replay} <span>Replay</span></button>
+        <button class="tool" id="btn-pause" title="Pause / Resume packets (Space)">${UI_ICONS.pause} <span>Pause</span></button>
+      `;
+
+      tools.querySelector('#btn-zoom-in')?.addEventListener('click', () => this.stage?.zoomIn());
+      tools.querySelector('#btn-zoom-out')?.addEventListener('click', () => this.stage?.zoomOut());
+      tools.querySelector('#btn-fit')?.addEventListener('click', () => this.stage?.resetView());
+      tools.querySelector('#btn-replay')?.addEventListener('click', () => this.stage?.replay());
+      tools.querySelector('#btn-pause')?.addEventListener('click', () => this.togglePause());
+    }
   }
 
   private renderGoalsCard(lesson: Lesson) {

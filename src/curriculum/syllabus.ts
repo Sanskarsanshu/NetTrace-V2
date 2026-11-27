@@ -9,9 +9,9 @@ export const SYLLABUS: SyllabusModule[] = [
     lessons: [
       {
         id: 'ip-address-structure',
-        title: 'How a Request Travels',
+        title: 'IP Fundamental',
         summary:
-          'Follow one page load hop by hop — and find out where the time really goes.',
+          'From domain request to 32-bit IPv4 octet breakdown: follow DNS resolution, 4 octets (0–255), and binary conversion.',
         minutes: 10,
         level: 'Beginner',
         ready: true,
