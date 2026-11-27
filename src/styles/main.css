@@ -1676,30 +1676,36 @@ code {
   stroke-dasharray: 4 3;
 }
 
-/* Smooth pop and glide transitions on step change */
+/* Smooth authentic lift drop-down and subtle spring landing on step change */
 @keyframes nodePopIn {
   0% {
     opacity: 0;
-    transform: translate(var(--node-x), var(--node-y)) scale(0.65);
+    transform: translate(var(--node-x), var(--node-y)) translateY(-70px);
   }
-  65% {
+  68% {
     opacity: 1;
-    transform: translate(var(--node-x), var(--node-y)) scale(1.05);
+    transform: translate(var(--node-x), var(--node-y)) translateY(5px);
+  }
+  84% {
+    transform: translate(var(--node-x), var(--node-y)) translateY(-2px);
   }
   100% {
     opacity: 1;
-    transform: translate(var(--node-x), var(--node-y)) scale(1);
+    transform: translate(var(--node-x), var(--node-y)) translateY(0);
   }
 }
 
 .iso-node--enter {
-  animation: nodePopIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: nodePopIn 0.62s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
 @keyframes linkEnter {
   0% {
     opacity: 0;
-    stroke-dashoffset: 60;
+    stroke-dashoffset: 140;
+  }
+  20% {
+    opacity: 1;
   }
   100% {
     opacity: 1;
@@ -1708,26 +1714,22 @@ code {
 }
 
 .iso-link--enter {
-  animation: linkEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: linkEnter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes pillPopIn {
   0% {
     opacity: 0;
-    transform: translate(var(--pill-x), var(--pill-y)) scale(0.65);
-  }
-  70% {
-    opacity: 1;
-    transform: translate(var(--pill-x), var(--pill-y)) scale(1.05);
+    transform: translate(var(--pill-x), var(--pill-y)) translateY(-8px);
   }
   100% {
     opacity: 1;
-    transform: translate(var(--pill-x), var(--pill-y)) scale(1);
+    transform: translate(var(--pill-x), var(--pill-y)) translateY(0);
   }
 }
 
 .iso-pill--enter {
-  animation: pillPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pillPopIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
 }
 
 .btn-next {

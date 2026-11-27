@@ -267,14 +267,17 @@ function drawPill(
   tone: 'neutral' | 'good' | 'warn' | 'bad' | 'violet' | 'blue' = 'neutral',
   x = 0,
   y = 0,
-  className = ''
+  className = '',
+  icon?: string
 ): SVGElement {
   const g = el('g', {
     class: `iso-pill ${className}`.trim(),
     transform: `translate(${x.toFixed(1)}, ${y.toFixed(1)})`,
   });
+  const hasIcon = Boolean(icon);
   const textW = measureTextWidth(text, 10.5, 700);
-  const w = Math.max(54, Math.ceil(textW + 24));
+  const iconSpace = hasIcon ? 16 : 0;
+  const w = Math.max(54, Math.ceil(textW + 24 + iconSpace));
   const h = 22;
   const bgMap = {
     neutral: '#fbf7f1',
@@ -293,7 +296,7 @@ function drawPill(
     blue: '#1a426b',
   };
 
-  // Hard pop shadow
+  // Hard pop shadow (2px offset below)
   g.appendChild(
     el('rect', {
       x: -w / 2 + 1.2,
@@ -318,12 +321,32 @@ function drawPill(
       'stroke-width': 1.4,
     })
   );
+
+  // Crisp SVG icon on left if requested
+  if (hasIcon) {
+    const iconX = -w / 2 + 13;
+    const ig = el('g', {
+      transform: `translate(${iconX.toFixed(1)}, 0)`,
+      color: inkMap[tone],
+    });
+    if (icon === 'globe') {
+      ig.innerHTML = `<circle cx="0" cy="0" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                      <ellipse cx="0" cy="0" rx="2" ry="5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+                      <line x1="-5" y1="0" x2="5" y2="0" stroke="currentColor" stroke-width="1.1"/>`;
+    } else if (icon === 'user') {
+      ig.innerHTML = `<circle cx="0" cy="-2.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="M-4.5 4.5 C-4.5 1.5, 4.5 1.5, 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.3"/>`;
+    }
+    g.appendChild(ig);
+  }
+
   // Mathematically centered text
+  const textX = hasIcon ? 7 : 0;
   g.appendChild(
     el(
       'text',
       {
-        x: 0,
+        x: textX,
         y: 0.5,
         'text-anchor': 'middle',
         'dominant-baseline': 'central',
@@ -442,8 +465,8 @@ function renderLaptop(entity: SceneEntity): SVGElement {
     })
   );
 
-  // Label pill comfortably underneath pedestal
-  g.appendChild(drawPill(entity.label, 'neutral', 0, 68));
+  // Label pill comfortably underneath pedestal with user icon
+  g.appendChild(drawPill(entity.label, 'neutral', 0, 56, '', 'user'));
   return g;
 }
 
@@ -592,20 +615,20 @@ function renderEntity(entity: SceneEntity): SVGElement {
         })
       );
     } else {
-      const depth = entity.kind === 'switch' ? 24 : 58;
+      const depth = entity.kind === 'switch' ? 24 : 46;
       g.appendChild(
         el('path', {
           d: roundedPolyPath(
             [
               [0, -32],
-              [68, 0],
+              [66, 0],
               [0, 32],
-              [-68, 0],
+              [-66, 0],
             ],
             10
           ),
           class: 'spot-ring',
-          transform: `translate(0, ${depth + 6})`,
+          transform: `translate(0, ${depth + 4})`,
         })
       );
     }
@@ -666,11 +689,11 @@ function renderEntity(entity: SceneEntity): SVGElement {
       )
     );
   } else {
-    // Exact reference isometric block proportions: rx=56, ry=28, depth=58 (switch: 24)
+    // Exact reference isometric block proportions: rx=56, ry=28, depth=46 (switch: 24)
     const rx = 56;
     const ry = 28;
-    const depth = entity.kind === 'switch' ? 24 : 58;
-    g.appendChild(buildRoundedIsoPrism(rx, ry, depth, 11, tone, 1.9));
+    const depth = entity.kind === 'switch' ? 24 : 46;
+    g.appendChild(buildRoundedIsoPrism(rx, ry, depth, 9, tone, 1.9));
 
     // Switch port LEDs along front-left bevel
     if (entity.kind === 'switch') {
@@ -698,43 +721,41 @@ function renderEntity(entity: SceneEntity): SVGElement {
             ? 'globe'
             : 'server');
 
+    // Glyph centered on the TOP diamond face (y = -1), matching designed-to-scale Zr
+    const glyphWrap = el('g', { transform: 'translate(0, -1)', color: '#211e1b' });
+    glyphWrap.innerHTML = drawBlockGlyph(iconName);
+    g.appendChild(glyphWrap);
+
     if (entity.kind === 'switch') {
-      const glyphWrap = el('g', { transform: 'translate(0, 0)', color: '#211e1b' });
-      glyphWrap.innerHTML = drawBlockGlyph(iconName);
-      g.appendChild(glyphWrap);
       g.appendChild(
         el(
           'text',
           {
             x: 0,
-            y: 13,
+            y: 14,
             'text-anchor': 'middle',
             'dominant-baseline': 'central',
             fill: '#211e1b',
-            'font-size': 13,
+            'font-size': 12.5,
             'font-weight': 800,
           },
           entity.label
         )
       );
     } else {
-      // Front face extends from y = 28 to y = 86 (depth 58)
-      // Icon centered at y = 44, label at y = 61, sublabel at y = 74
-      const glyphWrap = el('g', { transform: 'translate(0, 44)', color: '#211e1b' });
-      glyphWrap.innerHTML = drawBlockGlyph(iconName);
-      g.appendChild(glyphWrap);
-
+      // Front face extends below V-rim (y = 28) down to base (y = 74)
       if (entity.sublabel) {
+        // Label at y = 30, sublabel at y = 44 (authentic Zr reference: l = 29.6, l + 14 = 43.6)
         g.appendChild(
           el(
             'text',
             {
               x: 0,
-              y: 61,
+              y: 30,
               'text-anchor': 'middle',
               'dominant-baseline': 'central',
               fill: '#211e1b',
-              'font-size': 13,
+              'font-size': 13.5,
               'font-weight': 800,
             },
             entity.label
@@ -745,10 +766,10 @@ function renderEntity(entity: SceneEntity): SVGElement {
             'text',
             {
               x: 0,
-              y: 74,
+              y: 44,
               'text-anchor': 'middle',
               'dominant-baseline': 'central',
-              fill: '#4a4339',
+              fill: '#5a5246',
               'font-size': 10,
               'font-weight': 600,
             },
@@ -756,16 +777,17 @@ function renderEntity(entity: SceneEntity): SVGElement {
           )
         );
       } else {
+        // Single label centered on front face at y = 36
         g.appendChild(
           el(
             'text',
             {
               x: 0,
-              y: 65,
+              y: 36,
               'text-anchor': 'middle',
               'dominant-baseline': 'central',
               fill: '#211e1b',
-              'font-size': 13,
+              'font-size': 13.5,
               'font-weight': 800,
             },
             entity.label
@@ -775,14 +797,14 @@ function renderEntity(entity: SceneEntity): SVGElement {
     }
   }
 
-  // Floating tags above / below
+  // Floating tags above / below (zero overlap with block or screen)
   if (entity.tags?.length) {
-    let topOffset = entity.kind === 'osi-stack' ? -118 : entity.kind === 'laptop' ? -76 : -60;
+    let topOffset = entity.kind === 'osi-stack' ? -118 : entity.kind === 'laptop' ? -76 : -46;
     let botOffset = entity.kind === 'laptop' ? 96 : entity.kind === 'osi-stack' ? 176 : 100;
     for (const tag of entity.tags) {
       const pos = tag.pos || 'top';
       const ty = pos === 'top' ? topOffset : botOffset;
-      g.appendChild(drawPill(tag.text, tag.tone || 'neutral', 0, ty));
+      g.appendChild(drawPill(tag.text, tag.tone || 'neutral', 0, ty, '', tag.icon));
       if (pos === 'top') topOffset -= 28;
       else botOffset += 28;
     }
@@ -1270,6 +1292,51 @@ export class IsoStage {
   public render(scene: SceneSpec, stagger = true) {
     this.flows = scene.flows;
 
+    // 0. Auto-frame camera: smooth zoom and pan to keep the active scene perfectly centered
+    if (scene.entities.length) {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const ent of scene.entities) {
+        const [sx, sy] = iso(ent.x, ent.y);
+        const padX = ent.kind === 'laptop' ? 70 : 64;
+        const padTop = ent.tags?.length ? 85 : 45;
+        const padBot = 65;
+        minX = Math.min(minX, sx - padX);
+        maxX = Math.max(maxX, sx + padX);
+        minY = Math.min(minY, sy - padTop);
+        maxY = Math.max(maxY, sy + padBot);
+      }
+      for (const link of scene.links) {
+        const a = scene.entities.find((e) => e.id === link.from);
+        const b = scene.entities.find((e) => e.id === link.to);
+        if (a && b) {
+          const [ax, ay] = iso(a.x, a.y);
+          const [bx, by] = iso(b.x, b.y);
+          const mx = (ax + bx) / 2;
+          const my = (ay + by) / 2;
+          minX = Math.min(minX, mx - 80);
+          maxX = Math.max(maxX, mx + 80);
+          minY = Math.min(minY, my - 25);
+          maxY = Math.max(maxY, my + 25);
+        }
+      }
+      const sceneW = Math.max(280, maxX - minX + 80);
+      const sceneH = Math.max(220, maxY - minY + 80);
+      const sceneCx = (minX + maxX) / 2;
+      const sceneCy = (minY + maxY) / 2;
+
+      const fitScale = Math.min(1.3, Math.max(0.9, Math.min(880 / sceneW, 500 / sceneH)));
+      this.targetTx = 460 - sceneCx;
+      this.targetTy = 270 - sceneCy;
+      this.targetScale = fitScale;
+
+      if (!stagger && this.tx === 0 && this.ty === 0 && this.scale === 1) {
+        this.tx = this.targetTx;
+        this.ty = this.targetTy;
+        this.scale = this.targetScale;
+        this.applyTransform();
+      }
+    }
+
     const entityById = new Map<string, SceneEntity>();
     scene.entities.forEach((ent) => entityById.set(ent.id, ent));
 
@@ -1375,9 +1442,10 @@ export class IsoStage {
       if (link.label) {
         const total = pathEl.getTotalLength();
         const midPt = pathEl.getPointAtLength(total * 0.5);
-        const pill = drawPill(link.label, 'neutral', midPt.x, midPt.y, stagger ? 'iso-pill--enter' : '');
+        const pillY = midPt.y - 14;
+        const pill = drawPill(link.label, 'neutral', midPt.x, pillY, stagger ? 'iso-pill--enter' : '');
         pill.style.setProperty('--pill-x', `${midPt.x.toFixed(1)}px`);
-        pill.style.setProperty('--pill-y', `${midPt.y.toFixed(1)}px`);
+        pill.style.setProperty('--pill-y', `${pillY.toFixed(1)}px`);
         this.linksG.appendChild(pill);
       }
     }
@@ -1421,7 +1489,14 @@ export class IsoStage {
       const style = PACKET_STYLE[flow.kind];
 
       for (let i = 0; i < count; i++) {
-        let t = ((this.elapsed / cycleMs) + i / count) % 1;
+        const cycleProgress = (this.elapsed / cycleMs) * (flow.rate || 1) + i / count;
+        let t: number;
+        if (flow.bounce) {
+          const dCycle = (cycleProgress * 2) % 2;
+          t = dCycle > 1 ? 2 - dCycle : dCycle;
+        } else {
+          t = cycleProgress % 1;
+        }
         if (flow.reverse) t = 1 - t;
         const pt = path.getPointAtLength(t * totalLen);
 

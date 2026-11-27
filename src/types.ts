@@ -49,6 +49,7 @@ export interface NodeTag {
   text: string;
   tone?: 'neutral' | 'good' | 'warn' | 'bad' | 'violet' | 'blue';
   pos?: 'top' | 'bottom';
+  icon?: string;
 }
 
 export interface SceneEntity {
@@ -86,6 +87,7 @@ export interface SceneFlow {
   kind: PacketKind;
   rate?: number; // packets per 2.4s cycle
   reverse?: boolean;
+  bounce?: boolean;
   label?: string;
 }
 

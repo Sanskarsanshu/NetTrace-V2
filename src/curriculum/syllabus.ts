@@ -9,10 +9,10 @@ export const SYLLABUS: SyllabusModule[] = [
     lessons: [
       {
         id: 'ip-address-structure',
-        title: 'Understanding IP Address Structure & Octets',
+        title: 'How a Request Travels',
         summary:
-          'Learn IPv4 fundamentals from scratch: 4 octets, dotted quad notation, 32-bit binary breakdown, and localhost.',
-        minutes: 8,
+          'Follow one page load hop by hop — and find out where the time really goes.',
+        minutes: 10,
         level: 'Beginner',
         ready: true,
       },
